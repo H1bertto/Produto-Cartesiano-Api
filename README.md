@@ -1,5 +1,13 @@
 # Produto Cartesiano - Api
 
+### Endpoints
+
+
+ - ``/`` - Home da API
+
+ - ``/calculate/`` - Realiza as operações e lógicas entre conjutos
+
+
 ### Exemplos de Post
 
 - Operação:
