@@ -1,6 +1,7 @@
 import flask
 from flask import request, jsonify
 from flask.views import MethodView
+from ast import literal_eval
 # import pandas as pd
 import os
 
@@ -17,7 +18,11 @@ class CalculateView(MethodView):
 
     def post(self):
         conjunto_a = request.get_json().get('conjunto_a', False)
+        if not isinstance(conjunto_a, list):
+            conjunto_a = literal_eval(conjunto_a)
         conjunto_b = request.get_json().get('conjunto_b', False)
+        if not isinstance(conjunto_b, list):
+            conjunto_b = literal_eval(conjunto_b)
         operacao = request.get_json().get('operacao', False)
         logica = request.get_json().get('logica', False)
 
@@ -83,10 +88,21 @@ class CalculateView(MethodView):
                     if check_if_number(prod) and prod[1] != 0 and prod[0] / prod[1] == num:
                         result.append(prod)
             elif isinstance(logica, dict):
-                # if 'par' in logica:
-                # if 'impar' in logica:
-                # if 'primo' in logica:
-                pass
+                if 'a' in logica:
+                    if logica['a'] == 'par':
+                        result += list_evens(cartesian if not result else result, 0)
+                    elif logica['a'] == 'impar':
+                        result += list_odds(cartesian if not result else result, 0)
+                    elif logica['a'] == 'primo':
+                        result += list_primes(cartesian if not result else result, 0)
+                if 'b' in logica:
+                    if logica['b'] == 'par':
+                        result += list_evens(cartesian if not result else result, 0)
+                    elif logica['b'] == 'impar':
+                        result += list_odds(cartesian if not result else result, 0)
+                    elif logica['b'] == 'primo':
+                        result += list_primes(cartesian if not result else result, 0)
+                result = list(set(result))
 
         elif operacao:
             if operacao == '+':
