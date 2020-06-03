@@ -26,8 +26,8 @@ class CalculateView(MethodView):
             pass
 
         return jsonify({
-            'resposta': "",
-            'modulo': ""
+            'resposta': [[1, 2], [3, 4], [5, 6]],
+            'modulo': 4
         })
 
 
