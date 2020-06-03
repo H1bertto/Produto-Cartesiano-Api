@@ -1,6 +1,7 @@
 import flask
 from flask import request, jsonify
 from flask.views import MethodView
+import os
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -36,4 +37,6 @@ app.add_url_rule(
         '/calculate/', view_func=calculate_view, methods=['GET', 'POST']
 )
 
-app.run()
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
