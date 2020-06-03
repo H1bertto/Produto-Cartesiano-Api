@@ -15,7 +15,7 @@
 ```json
 {
   "conjunto_a": [1, 2, 3],
-  "conjunto_b": [1, 4, 5],
+  "conjunto_b": [2, 4],
   "operacao": "+",
   "logica": {}
 }
@@ -26,9 +26,9 @@
 ```json
 {
   "conjunto_a": [1, 2, 3],
-  "conjunto_b": [1, 4, 5],
+  "conjunto_b": [2, 4],
   "operacao": "",
-  "logica": {"a": "primo", "b": "impar"}
+  "logica": {"a": "primo", "b": "impar"} ou "a+b=<numero>"
 }
 ```
 
