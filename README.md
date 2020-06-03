@@ -1,6 +1,9 @@
-# Produto Cartesiano - Api
+# Trabalho de Matemática Discreta
 
-### Endpoints
+**Tema:** Produto Cartesiano
+
+### API - Docs:
+#### Endpoints
 
 
  - ``/`` - Home da API
@@ -8,7 +11,7 @@
  - ``/calculate/`` - Realiza as operações e lógicas entre conjutos
 
 
-### Exemplos de Post
+#### Exemplos de Post
 
 - Operação:
 
@@ -23,7 +26,7 @@
 
 - Lógica:
 
-```json
+```bash
 {
   "conjunto_a": [1, 2, 3],
   "conjunto_b": [2, 4],
@@ -35,13 +38,15 @@
 
 #
 
-### Exemplo de Resposta
+#### Exemplo de Resposta
 
 - Resposta:
 
 ```json
 {
-  "resposta": [[1, 1], [1, 2], [1, 3]],
-  "modulo": 3
+  "conjunto_universo": [[1, 2], [1, 4], [2, 2], [2, 4], [3, 2], [3, 4]],
+  "modulo_conjunto_universo": 6,
+  "resposta": [[2, 2]],
+  "modulo_resposta": 1
 }
 ```

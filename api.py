@@ -2,7 +2,8 @@ import flask
 from flask import request, jsonify
 from flask.views import MethodView
 from ast import literal_eval
-# import pandas as pd
+from markdown import markdown
+from pygments.formatters.html import HtmlFormatter
 import os
 
 app = flask.Flask(__name__)
@@ -11,7 +12,14 @@ app.config["DEBUG"] = True
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    return "<h1>Trabalho de Matemática Discreta</h1><p>Assunto: Produto Cartesiano</p>"
+    readme = open("README.md", 'r', encoding="utf-8")
+    md_template = markdown(readme.read(), extensions=["fenced_code"])
+    formatter = HtmlFormatter(style="emacs", full=True, cssclass="codehilite")
+    css_string = formatter.get_style_defs()
+    md_css_string = "<style>" + css_string + "</style>"
+    md_template = md_css_string + md_template
+    return md_template
+    # return "<h1>Trabalho de Matemática Discreta</h1><p>Assunto: Produto Cartesiano</p>"
 
 
 class CalculateView(MethodView):
@@ -130,7 +138,8 @@ app.add_url_rule(
 )
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
-
-# app.run()
+    if "HEROKU_ENV" in os.environ:
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host='0.0.0.0', port=port)
+    else:
+        app.run()
