@@ -4,9 +4,11 @@ from flask.views import MethodView
 from ast import literal_eval
 from markdown import markdown
 from pygments.formatters.html import HtmlFormatter
+from flask_cors import CORS
 import os
 
 app = flask.Flask(__name__)
+CORS(app)
 app.config["DEBUG"] = True
 
 
