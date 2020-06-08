@@ -5,7 +5,9 @@ from ast import literal_eval
 from markdown import markdown
 from pygments.formatters.html import HtmlFormatter
 from flask_cors import CORS
+import operator
 import os
+import re
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -33,13 +35,13 @@ class CalculateView(MethodView):
         conjunto_b = request.get_json().get('conjunto_b', False)
         if not isinstance(conjunto_b, list):
             conjunto_b = literal_eval(conjunto_b)
-        operacao = request.get_json().get('operacao', False)
         logica = request.get_json().get('logica', False)
 
         cartesian = [(x, y) for x in conjunto_a for y in conjunto_b]
         result = []
 
-        def check_if_prime(num):
+        # Primo
+        def prime(num, extra):
             if num > 1:
                 for i in range(2, num):
                     if (num % i) == 0:
@@ -50,81 +52,148 @@ class CalculateView(MethodView):
                 return False
 
         # Impar
-        def list_odds(new_list, opc):
-            odd_list = []
-            for prod in new_list:
-                if prod[opc] % 2 != 0:
-                    odd_list.append(prod)
-            return odd_list
+        def odd(num, extra):
+            if num % 2 != 0:
+                return True
+            return False
 
         # Par
-        def list_evens(new_list, opc):
-            even_list = []
-            for prod in new_list:
-                if prod[opc] % 2 == 0:
-                    even_list.append(prod)
-            return even_list
-
-        # Primos
-        def list_primes(new_list, opc):
-            prime_list = []
-            for prod in new_list:
-                if check_if_prime(prod[opc]):
-                    prime_list.append(prod)
-            return prime_list
+        def even(num, extra):
+            if num % 2 == 0:
+                return True
+            return False
+                
+        def check_if_only_numbers():
+            for prod in cartesian:
+                if not check_if_number(prod):
+                    return False
+            return True
 
         def check_if_number(prod):
             return isinstance(prod[0], int) and isinstance(prod[1], int)
 
-        if logica:
-            if 'a+b=' in logica:
-                num = int(logica.replace('a+b=', ''))
-                for prod in cartesian:
-                    if check_if_number(prod) and prod[0] + prod[1] == num:
-                        result.append(prod)
-            elif 'a-b=' in logica:
-                num = int(logica.replace('a-b=', ''))
-                for prod in cartesian:
-                    if check_if_number(prod) and prod[0] - prod[1] == num:
-                        result.append(prod)
-            elif 'a*b=' in logica:
-                num = int(logica.replace('a*b=', ''))
-                for prod in cartesian:
-                    if check_if_number(prod) and prod[0] * prod[1] == num:
-                        result.append(prod)
-            elif 'a/b=' in logica:
-                num = int(logica.replace('a/b=', ''))
-                for prod in cartesian:
-                    if check_if_number(prod) and prod[1] != 0 and prod[0] / prod[1] == num:
-                        result.append(prod)
-            elif isinstance(logica, dict):
-                if 'a' in logica:
-                    if logica['a'] == 'par':
-                        result += list_evens(cartesian if not result else result, 0)
-                    elif logica['a'] == 'impar':
-                        result += list_odds(cartesian if not result else result, 0)
-                    elif logica['a'] == 'primo':
-                        result += list_primes(cartesian if not result else result, 0)
-                if 'b' in logica:
-                    if logica['b'] == 'par':
-                        result += list_evens(cartesian if not result else result, 0)
-                    elif logica['b'] == 'impar':
-                        result += list_odds(cartesian if not result else result, 0)
-                    elif logica['b'] == 'primo':
-                        result += list_primes(cartesian if not result else result, 0)
-                result = list(set(result))
+        if logica and check_if_only_numbers():
+            a = None
+            b = None
+            x = None
+            num_a = None
+            num_b = None
+            num_x = None
 
-        elif operacao:
-            if operacao == '+':
-                pass
-            elif operacao == '-':
-                pass
-            elif operacao == '*':
-                pass
-            elif operacao == '/':
+            # Aritimetica
+            if 'a+b=' in logica:
+                x = operator.add
+                num_x = int(re.findall("a\+b=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'a-b=' in logica:
+                x = operator.sub
+                num_x = int(re.findall("a-b=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'a*b=' in logica:
+                x = operator.mul
+                num_x = int(re.findall("a\*b=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'a/b=' in logica:
+                x = operator.truediv
+                num_x = int(re.findall("a/b=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'a#b' in logica:
+                x = operator.mod
+                num_a = x
+
+            # Logica
+            if 'a!=' in logica:
+                a = operator.is_not
+                num_a = re.findall("a!=([\d]+|b)", logica, re.IGNORECASE)[0]
+            elif 'a<=' in logica:
+                a = operator.le
+                num_a = re.findall("a<=([\d]+|b)", logica, re.IGNORECASE)[0]
+            elif 'a<' in logica:
+                a = operator.lt
+                num_a = re.findall("a<([\d]+|b)", logica, re.IGNORECASE)[0]
+            elif 'a>=' in logica:
+                a = operator.ge
+                num_a = re.findall("a>=([\d]+|b)", logica, re.IGNORECASE)[0]
+            elif 'a>' in logica:
+                a = operator.gt
+                num_a = re.findall("a>([\d]+|b)", logica, re.IGNORECASE)[0]
+            elif 'a==' in logica:
+                a = operator.eq
+                num_a = re.findall("a==([\d]+|b)", logica, re.IGNORECASE)[0]
+            elif 'a=par' in logica:
+                a = even
+                num_a = "0"
+            elif 'a=impar' in logica:
+                a = odd
+                num_a = "0"
+            elif 'a=primo' in logica:
+                a = prime
+                num_a = "0"
+
+            if 'b!=' in logica:
+                b = operator.is_not
+                num_b = re.findall("b!=([\d]+|a)", logica, re.IGNORECASE)[0]
+            elif 'b<=' in logica:
+                b = operator.le
+                num_b = re.findall("b<=([\d]+|a)", logica, re.IGNORECASE)[0]
+            elif 'b<' in logica:
+                b = operator.lt
+                num_b = re.findall("b<([\d]+|a)", logica, re.IGNORECASE)[0]
+            elif 'b>=' in logica:
+                b = operator.ge
+                num_b = re.findall("b>=([\d]+|a)", logica, re.IGNORECASE)[0]
+            elif 'b>' in logica:
+                b = operator.gt
+                num_b = re.findall("b>([\d]+|a)", logica, re.IGNORECASE)[0]
+            elif 'b==' in logica:
+                b = operator.eq
+                num_b = re.findall("b==([\d]+|a)", logica, re.IGNORECASE)[0]
+            elif 'b=par' in logica:
+                b = even
+                num_b = "0"
+            elif 'b=impar' in logica:
+                b = odd
+                num_b = "0"
+            elif 'b=primo' in logica:
+                b = prime
+                num_b = "0"
+            
+            if '||' in logica:
                 for prod in cartesian:
-                    if check_if_number(prod) and prod[1] % prod[0] == 0:
+                    if num_a == 'b':
+                        num_a = prod[1]
+                    if num_b == 'a':
+                        num_b = prod[0]
+                    if a(prod[0], int(num_a)) or b(prod[1], int(num_b)) or x(prod[0], prod[1]) == num_x:
                         result.append(prod)
+            elif '&&' in logica:
+                for prod in cartesian:
+                    if num_a == 'b':
+                        num_a = prod[1]
+                    if num_b == 'a':
+                        num_b = prod[0]
+                    if a and b:
+                        if a(prod[0], int(num_a)) and b(prod[1], int(num_b)):
+                            result.append(prod)
+                    elif a and x:
+                        if a(prod[0], int(num_a)) and x(prod[0], prod[1]) == num_x:
+                            result.append(prod)
+                    elif b and x:
+                        if b(prod[1], int(num_b)) and x(prod[0], prod[1]) == num_x:
+                            result.append(prod)
+            else:
+                if a:
+                    for prod in cartesian:
+                        if num_a == 'b':
+                            num_a = prod[1]
+                        if a(prod[0], int(num_a)):
+                            result.append(prod)
+                elif b:
+                    for prod in cartesian:
+                        if num_b == 'a':
+                            num_b = prod[0]
+                        if b(prod[1], int(num_b)):
+                            result.append(prod)
+                elif x:
+                    for prod in cartesian:
+                        if x(prod[0], prod[1]) == num_x:
+                            result.append(prod)
 
         return jsonify({
             'conjunto_universo': cartesian,
