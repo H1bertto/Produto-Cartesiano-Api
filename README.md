@@ -13,25 +13,29 @@
 
 #### Exemplos de Post
 
-- Operação:
+```json
+{
+  "conjunto_a": [1, 2, 3],
+  "conjunto_b": [2, 4],
+  "logica": "a+b=4"
+}
+```
+Ou:
 
 ```json
 {
   "conjunto_a": [1, 2, 3],
   "conjunto_b": [2, 4],
-  "operacao": "+",
-  "logica": {}
+  "logica": "a>=2&&b<3"
 }
 ```
+Ou:
 
-- Lógica:
-
-```bash
+```json
 {
   "conjunto_a": [1, 2, 3],
   "conjunto_b": [2, 4],
-  "operacao": "",
-  "logica": {"a": "primo", "b": "impar"} ou "a+b=<numero>"
+  "logica": "a+b=4||b==1"
 }
 ```
 
