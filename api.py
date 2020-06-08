@@ -76,9 +76,11 @@ class CalculateView(MethodView):
             a = None
             b = None
             x = None
+            z = None
             num_a = None
             num_b = None
             num_x = None
+            num_z = None
 
             # Aritimetica
             if 'a+b=' in logica:
@@ -93,9 +95,24 @@ class CalculateView(MethodView):
             elif 'a/b=' in logica:
                 x = operator.truediv
                 num_x = int(re.findall("a/b=([\d]+)", logica, re.IGNORECASE)[0])
-            elif 'a#b' in logica:
+            elif 'a%b' in logica:
                 x = operator.mod
-                num_a = x
+                num_x = 0
+            if 'b+a=' in logica:
+                z = operator.add
+                num_z = int(re.findall("b\+a=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'b-a=' in logica:
+                z = operator.sub
+                num_z = int(re.findall("b-a=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'b*a=' in logica:
+                z = operator.mul
+                num_z = int(re.findall("b\*a=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'b/a=' in logica:
+                z = operator.truediv
+                num_z = int(re.findall("b/a=([\d]+)", logica, re.IGNORECASE)[0])
+            elif 'b%a' in logica:
+                z = operator.mod
+                num_z = 0
 
             # Logica
             if 'a!=' in logica:
@@ -169,6 +186,15 @@ class CalculateView(MethodView):
                     elif b and x:
                         if b(prod[1], int(num_b)) or x(prod[0], prod[1]) == num_x:
                             result.append(prod)
+                    elif a and z:
+                        if a(prod[0], int(num_a)) or z(prod[0], prod[1]) == num_z:
+                            result.append(prod)
+                    elif b and z:
+                        if b(prod[1], int(num_b)) or z(prod[0], prod[1]) == num_z:
+                            result.append(prod)
+                    elif x and z:
+                        if x(prod[0], prod[1]) == num_x or z(prod[0], prod[1]) == num_z:
+                            result.append(prod)
             elif '&&' in logica:
                 for prod in cartesian:
                     if num_a == 'b':
@@ -183,6 +209,15 @@ class CalculateView(MethodView):
                             result.append(prod)
                     elif b and x:
                         if b(prod[1], int(num_b)) and x(prod[0], prod[1]) == num_x:
+                            result.append(prod)
+                    elif a and z:
+                        if a(prod[0], int(num_a)) and z(prod[0], prod[1]) == num_z:
+                            result.append(prod)
+                    elif b and z:
+                        if b(prod[1], int(num_b)) and z(prod[0], prod[1]) == num_z:
+                            result.append(prod)
+                    elif x and z:
+                        if x(prod[0], prod[1]) == num_x and z(prod[0], prod[1]) == num_z:
                             result.append(prod)
             else:
                 if a:
@@ -200,6 +235,10 @@ class CalculateView(MethodView):
                 elif x:
                     for prod in cartesian:
                         if x(prod[0], prod[1]) == num_x:
+                            result.append(prod)
+                elif z:
+                    for prod in cartesian:
+                        if z(prod[0], prod[1]) == num_z:
                             result.append(prod)
 
         return jsonify({
