@@ -187,13 +187,13 @@ class CalculateView(MethodView):
                         if b(prod[1], int(num_b)) or x(prod[0], prod[1]) == num_x:
                             result.append(prod)
                     elif a and z:
-                        if a(prod[0], int(num_a)) or z(prod[0], prod[1]) == num_z:
+                        if a(prod[0], int(num_a)) or z(prod[1], prod[0]) == num_z:
                             result.append(prod)
                     elif b and z:
-                        if b(prod[1], int(num_b)) or z(prod[0], prod[1]) == num_z:
+                        if b(prod[1], int(num_b)) or z(prod[1], prod[0]) == num_z:
                             result.append(prod)
                     elif x and z:
-                        if x(prod[0], prod[1]) == num_x or z(prod[0], prod[1]) == num_z:
+                        if x(prod[0], prod[1]) == num_x or z(prod[1], prod[0]) == num_z:
                             result.append(prod)
             elif '&&' in logica:
                 for prod in cartesian:
@@ -211,13 +211,13 @@ class CalculateView(MethodView):
                         if b(prod[1], int(num_b)) and x(prod[0], prod[1]) == num_x:
                             result.append(prod)
                     elif a and z:
-                        if a(prod[0], int(num_a)) and z(prod[0], prod[1]) == num_z:
+                        if a(prod[0], int(num_a)) and z(prod[1], prod[0]) == num_z:
                             result.append(prod)
                     elif b and z:
-                        if b(prod[1], int(num_b)) and z(prod[0], prod[1]) == num_z:
+                        if b(prod[1], int(num_b)) and z(prod[1], prod[0]) == num_z:
                             result.append(prod)
                     elif x and z:
-                        if x(prod[0], prod[1]) == num_x and z(prod[0], prod[1]) == num_z:
+                        if x(prod[0], prod[1]) == num_x and z(prod[1], prod[0]) == num_z:
                             result.append(prod)
             else:
                 if a:
@@ -238,7 +238,7 @@ class CalculateView(MethodView):
                             result.append(prod)
                 elif z:
                     for prod in cartesian:
-                        if z(prod[0], prod[1]) == num_z:
+                        if z(prod[1], prod[0]) == num_z:
                             result.append(prod)
 
         return jsonify({
