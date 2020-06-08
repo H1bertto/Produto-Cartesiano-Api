@@ -160,8 +160,15 @@ class CalculateView(MethodView):
                         num_a = prod[1]
                     if num_b == 'a':
                         num_b = prod[0]
-                    if a(prod[0], int(num_a)) or b(prod[1], int(num_b)) or x(prod[0], prod[1]) == num_x:
-                        result.append(prod)
+                    if a and b:
+                        if a(prod[0], int(num_a)) or b(prod[1], int(num_b)):
+                            result.append(prod)
+                    elif a and x:
+                        if a(prod[0], int(num_a)) or x(prod[0], prod[1]) == num_x:
+                            result.append(prod)
+                    elif b and x:
+                        if b(prod[1], int(num_b)) or x(prod[0], prod[1]) == num_x:
+                            result.append(prod)
             elif '&&' in logica:
                 for prod in cartesian:
                     if num_a == 'b':
