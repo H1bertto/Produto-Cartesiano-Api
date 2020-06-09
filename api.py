@@ -95,9 +95,9 @@ class CalculateView(MethodView):
             elif 'a/b=' in logica:
                 x = operator.truediv
                 num_x = int(re.findall("a/b=([\d]+)", logica, re.IGNORECASE)[0])
-            elif 'a%b' in logica:
+            elif 'a%b=' in logica:
                 x = operator.mod
-                num_x = 0
+                num_x = int(re.findall("a%b=([\d]+)", logica, re.IGNORECASE)[0])
             if 'b+a=' in logica:
                 z = operator.add
                 num_z = int(re.findall("b\+a=([\d]+)", logica, re.IGNORECASE)[0])
@@ -110,9 +110,9 @@ class CalculateView(MethodView):
             elif 'b/a=' in logica:
                 z = operator.truediv
                 num_z = int(re.findall("b/a=([\d]+)", logica, re.IGNORECASE)[0])
-            elif 'b%a' in logica:
+            elif 'b%a=' in logica:
                 z = operator.mod
-                num_z = 0
+                num_z = int(re.findall("b%a=([\d]+)", logica, re.IGNORECASE)[0])
 
             # Logica
             if 'a!=' in logica:
